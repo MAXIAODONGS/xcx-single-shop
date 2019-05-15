@@ -9,8 +9,10 @@
 	},
 	"compileType": "miniprogram",
 	"libVersion": "1.5.2",
-	"appid": "wx98ff5b8f21989623",
+	"appid": "wx684d505d46bf6021",
 	"projectname": "imitate-coco-xcx",
+	"simulatorType": "wechat",
+	"simulatorPluginLibVersion": {},
 	"condition": {
 		"search": {
 			"current": -1,

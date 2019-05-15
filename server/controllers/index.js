@@ -1,9 +1,9 @@
 import {sequelize} from '../sql.js'
 var qn = require('qn');
-var rp = require('request-promise')
+var rp = require('request-promise');
 
 
-var moment = require('moment')
+var moment = require('moment');
 //七牛云服务器配置
 var client = qn.create({
     accessKey: 'YOUR_ACCESSKEY',

@@ -2,7 +2,7 @@ import {sequelize} from '../sql.js'
 import moment from 'moment'
 import WXBizDataCrypt from '../config/WXBizDataCrypt'
 var wxConfig = require('../config/wxConfig');
-var rp = require('request-promise')
+var rp = require('request-promise');
 //注册
 let register=async(ctx, next) => {
     //接受的参数
@@ -11,8 +11,8 @@ let register=async(ctx, next) => {
     //查重
     let isExist = await (sequelize.query("select `openId` from user where openId='"+crb.openId+"'",{
         type: sequelize.QueryTypes.SELECT
-    }))
-    console.log(isExist)
+    }));
+    console.log(isExist);
     // 用户初次登录注册信息
     if(isExist.length===0){
         if(!crb.avatarUrl){
@@ -21,14 +21,14 @@ let register=async(ctx, next) => {
         if(!crb.city){
             crb.city="未知"
         }
-        let time = moment().format('YYYY-MM-DD HH:mm:ss')
+        let time = moment().format('YYYY-MM-DD HH:mm:ss');
         let res = await (sequelize.query(
             "INSERT INTO `user` (`nickName`,`openId`,`avatarUrl`,`province`,`city`,`gender`,`role`,`root`,`resum`,`create_time`,`last_loginTime`) " +
             "VALUES (" +
             "'"+crb.nickName+"','"+ crb.openId+"','"+crb.avatarUrl+"','"+crb.province+"','"+crb.city+"','"+crb.gender+"','"
             +0+"','"+0+"','"+0+"','"+time+"','"+time+"')",{
             type: sequelize.QueryTypes.INSERT
-        }))
+        }));
         return ctx.response.body={
             "code":0,
             "msg":"注册成功"
@@ -39,20 +39,20 @@ let register=async(ctx, next) => {
             "msg":"该用户已注册"
         }
     }
-}
+};
 
 
 //登录
 let login =async(ctx,next)=>{
-    let time = moment().format('YYYY-MM-DD HH:mm:ss')
+    let time = moment().format('YYYY-MM-DD HH:mm:ss');
      await (sequelize.query("UPDATE  `user` SET `last_loginTime`='"+time+"' where openId='"+ctx.query.openId+"'",{
      			type: sequelize.QueryTypes.UPDATE
-     		}))
+     		}));
         return ctx.response.body={
             "code":0,
             "msg":"登录成功",
         }
-}
+};
 
 //获取openid
 let getUserOpenId=async(ctx, next) => {
@@ -76,31 +76,31 @@ let getUserOpenId=async(ctx, next) => {
 };
 //用户绑定手机号
 let bindPhone=async(ctx, next) => {
-    let sessionKey = ctx.request.body.session
-    let encryptedData = ctx.request.body.encryptedData
-    let iv = ctx.request.body.iv
-    console.log(wxConfig.AppID)
-    let pc = new WXBizDataCrypt(wxConfig.AppID, sessionKey)
+    let sessionKey = ctx.request.body.session;
+    let encryptedData = ctx.request.body.encryptedData;
+    let iv = ctx.request.body.iv;
+    console.log(wxConfig.AppID);
+    let pc = new WXBizDataCrypt(wxConfig.AppID, sessionKey);
 
-    let data = pc.decryptData(encryptedData , iv)
-    console.log(data)
+    let data = pc.decryptData(encryptedData , iv);
+    console.log(data);
     await (sequelize.query("UPDATE  `user` SET `phone`='"+data.phoneNumber+"' where openId='"+ctx.query.openId+"'",{
         type: sequelize.QueryTypes.UPDATE
-    }))
+    }));
     return ctx.response.body={
         "code":0
     }
-}
+};
 //获取用户信息
 let getMyInfo=async(ctx, next) => {
     let isExist = await (sequelize.query("select `openId`,`phone` from user where openId='"+ctx.query.openId+"'",{
         type: sequelize.QueryTypes.SELECT
-    }))
+    }));
     return ctx.response.body={
         "code":0,
         "data":isExist
     }
-}
+};
 
 module.exports = {
     'POST /register': register,//新用户注册

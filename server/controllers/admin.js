@@ -1,10 +1,10 @@
 import {sequelize} from '../sql.js'
 
 var qn = require('qn');
-var rp = require('request-promise')
+var rp = require('request-promise');
 
 
-var moment = require('moment')
+var moment = require('moment');
 var client = qn.create({
     accessKey: 'MIn8z_veB2LIAFvJtTw5lwUQQxo2Otq8lk8w724r',
     secretKey: 'j02Smy4yGfggacjF1DE-Q5vl4Ae9pN3ovhLWP6F1',
@@ -17,7 +17,7 @@ let login =async(ctx,next)=>{
     let crb =ctx.request.body;
     let res = await (sequelize.query("select `userName`,`role` from admin where userName ='"+crb.userName+"' and password ='"+crb.password+"'",{
         type: sequelize.QueryTypes.SELECT
-    }))
+    }));
     if(res.length>0){
         return ctx.response.body={
             "code": 0,
@@ -29,7 +29,7 @@ let login =async(ctx,next)=>{
             "data":'用户名或密码错误',
         }
     }
-}
+};
 
 
 
@@ -37,25 +37,25 @@ let login =async(ctx,next)=>{
 let getUserList =async(ctx,next)=>{
     let res = await (sequelize.query("select * from user",{
         type: sequelize.QueryTypes.SELECT
-    }))
+    }));
 
     return ctx.response.body={
         "code":0,
         "msg":res,
     }
-}
+};
 
 //根据用户名搜索
 let searchByName = async(ctx,next)=>{
     let res = await (sequelize.query("select * from user where nickName  like '%"+ctx.query.name+"%'",{
             type: sequelize.QueryTypes.SELECT
-        }))
+        }));
     return ctx.response.body={
         "code":0,
         "msg":res,
     }
 
-}
+};
 
 
 
@@ -63,15 +63,15 @@ let searchByName = async(ctx,next)=>{
 let getOrderList =async(ctx,next)=>{
     let count = await (sequelize.query("select count(*) as count  from `order`",{
         type: sequelize.QueryTypes.SELECT
-    }))
+    }));
 
     let res = await (sequelize.query("select * from `order` order by id desc limit "+ctx.query.page+","+ctx.query.pageSize,{
         type: sequelize.QueryTypes.SELECT
-    }))
+    }));
     res.forEach(item=>{
-        item.cartList=JSON.parse(item.cartList)
+        item.cartList=JSON.parse(item.cartList);
         item.time = moment(item.time).format('YYYY-MM-DD HH:MM')
-    })
+    });
 
     return ctx.response.body={
         "code":0,
@@ -81,39 +81,39 @@ let getOrderList =async(ctx,next)=>{
         },
     }
 
-}
+};
 
 //获取后台预约列表
 let getAppointList =async(ctx,next)=>{
-    let page=(ctx.query.page-1)*10
+    let page=(ctx.query.page-1)*10;
 
     let res = await (sequelize.query("select * from `appoint` limit "+page+",5",{
         type: sequelize.QueryTypes.SELECT
-    }))
+    }));
 
     return ctx.response.body={
         "code":0,
         "msg":res,
     }
 
-}
+};
 
 //后台管理拉取菜品（分页）
 let getfoodList =async(ctx,next)=>{
     let count = await (sequelize.query("select count(*) as count  from foods where status=1",{
         type: sequelize.QueryTypes.SELECT
-    }))
+    }));
     let res = await (sequelize.query("select * from foods where status=1  order by id desc  limit "+ctx.query.page+","+ctx.query.pageSize,{
         type: sequelize.QueryTypes.SELECT
-    }))
+    }));
     //菜单列表
     let menuMap = await (sequelize.query("select * from menu",{
         type: sequelize.QueryTypes.SELECT
-    }))
-    let map={}
+    }));
+    let map={};
     menuMap.forEach(function(item){
         map[item.id]=item.type
-    })
+    });
 
     return ctx.response.body={
         "code":0,
@@ -123,7 +123,7 @@ let getfoodList =async(ctx,next)=>{
             "menuMap":map
         },
     }
-}
+};
 
 //后台添加菜品
 let addFood =async(ctx,next)=>{
@@ -132,13 +132,13 @@ let addFood =async(ctx,next)=>{
     let res = await (sequelize.query("INSERT INTO `foods` (`type`,`name`,`price`,`img`,`enName`,`status`,`tem`,`size`,`desc`) VALUES" +
         " ('"+crb.type+"','"+crb.name+"','"+crb.price+"','"+crb.img+"','"+crb.enName+"',1,'"+crb.tem+"','"+crb.size+"','"+crb.desc+"')",{
         type: sequelize.QueryTypes.INSERT
-    }))
+    }));
 
     return ctx.response.body={
         "code":0,
         "msg":res,
     }
-}
+};
 
 //更新菜品
 let updateFood =async(ctx,next)=>{
@@ -146,25 +146,25 @@ let updateFood =async(ctx,next)=>{
     let res = await (sequelize.query("UPDATE  `foods` SET  `name`='"+crb.name+"',`price`='"+crb.price+"', `img`='"+crb.img+"'," +
         " `type`='"+crb.typeId+"', `enName`='"+crb.enName+"', `size`='"+crb.size+"', `tem`='"+crb.tem+"', `desc`='"+crb.desc+"' where id='"+crb.id+"'",{
         type: sequelize.QueryTypes.UPDATE
-    }))
+    }));
     return ctx.response.body={
         "code":0,
         "msg":"更改成功",
         "data":res
     }
-}
+};
 
 //获取单个用户信息
 let getUserInfo =async(ctx,next)=>{
     let res = await (sequelize.query("select * from user where userName='"+ctx.query.userName+"'",{
         type: sequelize.QueryTypes.SELECT
-    }))
+    }));
 
     return ctx.response.body={
         "code":0,
         "msg":res[0],
     }
-}
+};
 
 
 
@@ -173,13 +173,13 @@ let updateRole =async(ctx,next)=>{
     let crb=ctx.request.body;
     let res = await (sequelize.query("UPDATE  user SET `role`='"+crb.role+"' , `root`='"+crb.root+"' where id='"+crb.id+"'",{
         type: sequelize.QueryTypes.UPDATE
-    }))
+    }));
     return ctx.response.body={
         "code":0,
         "msg":"更改成功",
         "data":res
     }
-}
+};
 
 
 
@@ -189,36 +189,36 @@ let updateRole =async(ctx,next)=>{
 let deleteUser =async(ctx,next)=>{
     let res = await (sequelize.query("DELETE FROM `users` WHERE `username` = '"+ctx.query.username+"'",{
         type: sequelize.QueryTypes.DELETE
-    }))
+    }));
     return ctx.response.body={
         "code":0,
         "msg":"删除成功",
     }
-}
+};
 
 
 //后台删除商品
 let deleteFood=async(ctx,next)=>{
     let res = await (sequelize.query("UPDATE  `foods` SET `status`=0  WHERE `id` = '"+ctx.query.id+"'",{
         type: sequelize.QueryTypes.UPDATE
-    }))
+    }));
     return ctx.response.body={
         "code":0,
         "msg":"删除成功",
     }
-}
+};
 
 //获取食品分类列表
 let getFoodTypeList =async(ctx,next)=>{
     let res = await (sequelize.query("select * from menu",{
         type: sequelize.QueryTypes.SELECT
-    }))
+    }));
 
     return ctx.response.body={
         "code":0,
         "msg":res,
     }
-}
+};
 
 //添加食品分类
 let addMenu =async(ctx,next)=>{
@@ -226,19 +226,19 @@ let addMenu =async(ctx,next)=>{
     let crb=ctx.request.body;
     let res = await (sequelize.query("INSERT INTO `menu` (`type`) VALUES ('"+crb.type+"')",{
         type: sequelize.QueryTypes.INSERT
-    }))
+    }));
 
     return ctx.response.body={
         "code":0,
         "msg":res,
     }
-}
+};
 
 //获取图片编号    
 let getImgNum =async(ctx,next)=>{
     let res = await (sequelize.query("select `img` from  `foods`  where type='"+ctx.query.type+"' order by id desc  limit 0,1",{
         type: sequelize.QueryTypes.SELECT
-    }))
+    }));
     let num =  res.length>0?parseInt(res[0].img)+1:1;
 
 
@@ -246,12 +246,12 @@ let getImgNum =async(ctx,next)=>{
         "code":0,
         "msg":num,
     }
-}
+};
 //根据食品名称进行搜索
 let searchFoodsByName= async(ctx,next)=>{
     let res = await (sequelize.query("select * from `foods` where name  like '%"+ctx.query.name+"%'",{
         type: sequelize.QueryTypes.SELECT
-    }))
+    }));
     return ctx.response.body={
         "code":0,
         "msg":res,
@@ -263,7 +263,7 @@ let searchFoodsByName= async(ctx,next)=>{
 let overOrder= async(ctx,next)=>{
     let res = await (sequelize.query("UPDATE  `order` SET `status`=2  where orderId='"+ctx.query.orderId+"'",{
         type: sequelize.QueryTypes.UPDATE
-    }))
+    }));
     return ctx.response.body={
         "code":0,
         "msg":"更改成功",
@@ -275,7 +275,7 @@ let overOrder= async(ctx,next)=>{
 let  refundOrder= async(ctx,next)=>{
     let res = await (sequelize.query("UPDATE  `order` SET `status`=0  where orderId='"+ctx.query.orderId+"'",{
         type: sequelize.QueryTypes.UPDATE
-    }))
+    }));
     return ctx.response.body={
         "code":0,
         "msg":"更改成功",
@@ -291,11 +291,11 @@ let printDay= async(ctx,next)=>{
     let dayBegin = moment(day).format('YYYY-MM-DD 00:00:00');
     let orderNumber = await (sequelize.query("select count(*) as count  from `order`  where  status =2 AND time BETWEEN '"+dayBegin+"' AND '"+dayEnd+"' ",{
         type: sequelize.QueryTypes.SELECT
-    }))
-    console.log(orderNumber)
+    }));
+    console.log(orderNumber);
     let sum = await (sequelize.query("select SUM(`sumMoney`) as count  from `order`  where  status =2 AND time BETWEEN '"+dayBegin+"' AND '"+dayEnd+"' ",{
         type: sequelize.QueryTypes.SELECT
-    }))
+    }));
     let xsum = sum[0].count?sum[0].count:0;
     let xorderNumber = orderNumber[0].count?orderNumber[0].count:0;
      let option={
@@ -325,14 +325,14 @@ let printDay= async(ctx,next)=>{
             "origin_id":"2018050920444247"
         },
         json:true
-    }
-    let result = await rp(option)
+    };
+    let result = await rp(option);
 
     return ctx.response.body={
         "code":0,
         "data":result
     }
-}
+};
 
 
 
